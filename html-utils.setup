@@ -1,0 +1,10 @@
+;;; html-utils.setup -*- Scheme -*-
+
+(compile -s -O2 -d1 -j html-utils html-utils.scm)
+(compile -s -O2 -d1 html-utils.import.scm)
+
+(install-extension
+ 'html-utils
+ '("html-utils.so" "html-utils.import.so")
+ '((version 0.5)
+   ))

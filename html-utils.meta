@@ -1,0 +1,11 @@
+;;; html-utils.meta -*- Scheme -*-
+
+((egg "html-utils.egg")
+ (synopsis "Procedures to ease the generation of some frequently used [X]HTML structures")
+ (category web)
+ (license "BSD")
+ (doc-from-wiki)
+ (author "<a href=\"http://wiki.call-cc.org/users/mario-domenech-goulart\">Mario Domenech Goulart</a>")
+ (needs html-tags)
+ (test-depends test html-tags)
+ (files "html-utils.setup" "html-utils.scm" "html-utils.html"))
