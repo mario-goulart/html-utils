@@ -7,5 +7,4 @@
  (doc-from-wiki)
  (author "<a href=\"http://wiki.call-cc.org/users/mario-domenech-goulart\">Mario Domenech Goulart</a>")
  (needs html-tags)
- (test-depends test html-tags)
- (files "html-utils.setup" "html-utils.scm" "html-utils.html"))
+ (test-depends test html-tags))
