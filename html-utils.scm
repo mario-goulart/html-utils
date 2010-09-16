@@ -11,24 +11,31 @@
 (import chicken scheme files data-structures posix utils)
 (use html-tags srfi-13)
 
-(define (tabularize data #!key table-id table-class quote-procedure even-row-class odd-row-class header)
+(define (tabularize data #!key table-id table-class quote-procedure even-row-class odd-row-class header thead/tbody)
   (let ((even-row #f))
     (<table> id: table-id class: table-class quote-procedure: quote-procedure
              (string-append
               (if header
-                  (<tr> (string-intersperse (map <th> header) ""))
+                  (let ((h (<tr> (string-intersperse (map <th> header) ""))))
+                    (if thead/tbody
+                        (<thead> h)
+                        h))
                   "")
-              (string-intersperse
-               (map (lambda (line)
-                      (<tr> class: (and even-row-class odd-row-class
-                                        (begin
-                                          (set! even-row (not even-row))
-                                          (if even-row
-                                              even-row-class
-                                              odd-row-class)))
-                            (string-intersperse (map <td> line) "")))
-                    data)
-               "")))))
+              (let ((body
+                     (string-intersperse
+                      (map (lambda (line)
+                             (<tr> class: (and even-row-class odd-row-class
+                                               (begin
+                                                 (set! even-row (not even-row))
+                                                 (if even-row
+                                                     even-row-class
+                                                     odd-row-class)))
+                                   (string-intersperse (map <td> line) "")))
+                           data)
+                      "")))
+                (if thead/tbody
+                    (<tbody> body)
+                    body))))))
 
 (define (html-list listing self items #!key list-id list-class quote-procedure)
   (listing id: list-id class: list-class quote-procedure: quote-procedure
