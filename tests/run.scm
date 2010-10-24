@@ -118,3 +118,5 @@
         page))
 
 (test-end "html-utils")
+
+(unless (zero? (test-failure-count)) (exit 1))
