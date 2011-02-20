@@ -92,8 +92,8 @@
          (list-attribs `((id . ,list-id)
                          (class . ,list-class)))
          (map (lambda (item)
-                (if (list? item)
-                    (self item)
+                (if (and (list? item) (eq? (car item) listing))
+                    item
                     `(li ,item)))
               items))))
 

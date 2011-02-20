@@ -4,6 +4,8 @@
 
 (test-begin "html-utils")
 
+(test-begin "html-utils strings")
+
 ;;; combo-box
 (test "<select name='test' id='test'><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option></select>"
       (combo-box "test" '(1 2 3)))
@@ -117,6 +119,11 @@
         (delete-file "style2.css")
         page))
 
+(test-end)
+
+
+(test-begin "html-utils SXML")
+
 ;;; SXML
 (generate-sxml? #t)
 
@@ -139,7 +146,7 @@
 
 (test '(ul (@ (id "foo")) (li 1) (li 2)) (itemize '(1 2) list-id: "foo"))
 
-(test '(ul (li 1) (li 2) (ul (li 3) (li 4))) (itemize '(1 2 (3 4))))
+(test '(ul (li 1) (li 2) (ul (li 3) (li 4))) (itemize `(1 2 ,(itemize '(3 4)))))
 
 ;; from awful
 (test '(ul (@ (id "button-bar"))
@@ -158,7 +165,7 @@
 (test '(html (head) (body)) (html-page '()))
 (test '(html (head (title "title")) (body "foo")) (html-page "foo" title: "title"))
 
-(test '((lit "<test-doctype>") (html (head) (body)))
+(test '((literal "<test-doctype>") (html (head) (body)))
       (html-page '() doctype: "<test-doctype>"))
 
 (test '(html (head (title "title")) (body))
@@ -273,6 +280,8 @@
 (test '((input (@ (type "hidden") (id "test") (name "test") (value "0")))
         (input (@ (type "hidden") (id "test2") (name "test2") (value "1"))))
       (hidden-input '((test . 0) (test2 . 1))))
+
+(test-end "html-utils SXML")
 
 (test-end "html-utils")
 
