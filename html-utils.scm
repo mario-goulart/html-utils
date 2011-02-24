@@ -6,6 +6,7 @@
    combo-box
    hidden-input
    text-input
+   password-input
    submit-input)
 
 (import chicken scheme files data-structures posix utils)
