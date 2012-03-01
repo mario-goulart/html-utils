@@ -81,7 +81,7 @@
 (test "<html><head><title>title</title></head><body></body></html>"
       (html-page "" title: "title"))
 
-(test "<html><head><title>title</title><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'></head><body></body></html>"
+(test "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'><title>title</title></head><body></body></html>"
       (html-page "" title: "title" charset: "UTF-8"))
 
 (test "<html><head><title>title</title><script type='text/javascript' src='js.js'></script></head><body></body></html>"
@@ -171,7 +171,7 @@
 (test '(html (head (title "title")) (body))
       (html-page '() title: "title"))
 
-(test '(html (head (title "title") (meta (@ (http-equiv "Content-Type") (content "text/html; charset=UTF-8")))) (body))
+(test '(html (head (meta (@ (http-equiv "Content-Type") (content "text/html; charset=UTF-8"))) (title "title")) (body))
       (html-page '() title: "title" charset: "UTF-8"))
 
 (test '(html (head (title "title") (script (@ (type "text/javascript") (src "js.js")))) (body))
