@@ -136,11 +136,11 @@
   (let ((page
          `(html
            ,(append '(head)
-                    (if title `((title ,title)) '())
                     (if charset
                         `((meta (@ (http-equiv "Content-Type")
                                    (content ,(string-append "text/html; charset=" charset)))))
                         '())
+                    (if title `((title ,title)) '())
                     (cond ((string? css)
                            `((link (@ (rel "stylesheet")
                                       (href ,css)
@@ -174,11 +174,11 @@
        (or doctype "")
        (<html>
         (<head>
-         (if title (<title> title) "")
          (if charset
              (<meta> http-equiv: "Content-Type"
                      content:  (string-append "text/html; charset=" charset))
              "")
+         (if title (<title> title) "")
          (cond ((string? css)
                 (<link> rel: "stylesheet" href: css type: "text/css"))
                ((list? css)
