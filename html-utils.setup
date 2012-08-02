@@ -6,5 +6,5 @@
 (install-extension
  'html-utils
  '("html-utils.so" "html-utils.import.so")
- '((version 0.8)
+ '((version 0.9)
    ))
