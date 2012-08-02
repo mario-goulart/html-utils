@@ -1,7 +1,7 @@
 ;;; html-utils.meta -*- Scheme -*-
 
 ((egg "html-utils.egg")
- (synopsis "Procedures to ease the generation of some frequently used [X]HTML structures")
+ (synopsis "Procedures to ease the generation of some frequently used [X]HTML/SXML structures")
  (category web)
  (license "BSD")
  (doc-from-wiki)
