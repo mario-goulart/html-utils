@@ -162,15 +162,12 @@
         (append `((literal ,doctype)) `(,page))
         page)))
 
-(define sxml-doctype
-  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">")
-
 (define (html-page contents #!key css title doctype headers charset)
   (if (generate-sxml?)
       (sxml-page contents
                  css: css
                  title: title
-                 doctype: (or doctype sxml-doctype)
+                 doctype: doctype
                  headers: headers
                  charset: charset)
       (string-append
