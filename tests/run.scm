@@ -171,7 +171,12 @@
 (test '(html (head (title "title")) (body))
       (html-page '() title: "title"))
 
-(test '(html (head (meta (@ (http-equiv "Content-Type") (content "text/html; charset=UTF-8"))) (title "title")) (body))
+(test '(html (head (meta (@ (http-equiv "Content-Type") (content "foo; charset=UTF-8"))) (title "title"))
+             (body))
+      (html-page '() title: "title" content-type: "foo"))
+
+(test '(html (head (meta (@ (http-equiv "Content-Type") (content "application/xhtml+xml; charset=UTF-8"))) (title "title"))
+             (body))
       (html-page '() title: "title" charset: "UTF-8"))
 
 (test '(html (head (title "title") (script (@ (type "text/javascript") (src "js.js")))) (body))

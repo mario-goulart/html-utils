@@ -132,13 +132,18 @@
 
 
 ;;; html-page
-(define (sxml-page contents #!key css title doctype headers charset)
+(define (sxml-page contents #!key css title doctype headers charset content-type literal-style?)
   (let ((page
          `(html
            ,(append '(head)
-                    (if charset
+                    (if (or charset content-type)
                         `((meta (@ (http-equiv "Content-Type")
-                                   (content ,(string-append "text/html; charset=" charset)))))
+                                   (content
+                                    ,(string-append (or content-type
+                                                        "application/xhtml+xml")
+                                                    "; charset="
+                                                    (or charset
+                                                        "UTF-8"))))))
                         '())
                     (if title `((title ,title)) '())
                     (cond ((string? css)
@@ -148,7 +153,10 @@
                           ((list? css)
                            (map (lambda (f)
                                   (if (list? f)
-                                      `(style ,(read-all (make-pathname (current-directory) (car f))))
+                                      (let ((data (read-all (make-pathname (current-directory) (car f)))))
+                                        `(style ,(if literal-style?
+                                                     `(literal ,data)
+                                                     data)))
                                       `(link (@ (rel "stylesheet")
                                                 (href ,f)
                                                 (type "text/css")))))
@@ -162,21 +170,25 @@
         (append `((literal ,doctype)) `(,page))
         page)))
 
-(define (html-page contents #!key css title doctype headers charset)
+(define (html-page contents #!key css title doctype headers charset content-type literal-style?)
   (if (generate-sxml?)
       (sxml-page contents
                  css: css
                  title: title
                  doctype: doctype
                  headers: headers
-                 charset: charset)
+                 charset: charset
+                 content-type: content-type
+                 literal-style?: literal-style?)
       (string-append
        (or doctype "")
        (<html>
         (<head>
-         (if charset
+         (if (or charset content-type)
              (<meta> http-equiv: "Content-Type"
-                     content:  (string-append "text/html; charset=" charset))
+                     content:  (string-append
+                                (or content-type "text/html")
+                                "; charset=" (or charset "UTF-8")))
              "")
          (if title (<title> title) "")
          (cond ((string? css)
@@ -185,7 +197,8 @@
                 (string-intersperse
                  (map (lambda (f)
                         (if (list? f)
-                            (<style> (read-all (make-pathname (current-directory) (car f))))
+                            (<style> convert-to-entities?: (not literal-style?)
+                                     (read-all (make-pathname (current-directory) (car f))))
                             (<link> rel: "stylesheet" href: f type: "text/css")))
                       css)
                  ""))
