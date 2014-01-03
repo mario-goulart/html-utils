@@ -132,45 +132,66 @@
 
 
 ;;; html-page
-(define (sxml-page contents #!key css title doctype headers charset content-type literal-style?)
+(define (format-sxml-attribs attribs)
+  (if (null? attribs)
+      '()
+      `((@ ,@attribs))))
+
+(define (apply-tag-attribs/sxml tag attribs . content)
+  (cons tag (append (format-sxml-attribs attribs)
+                    content)))
+
+(define (sxml-page contents #!key css title doctype headers charset content-type literal-style? (html-attribs '()) (body-attribs '()))
   (let ((page
-         `(html
-           ,(append '(head)
-                    (if (or charset content-type)
-                        `((meta (@ (http-equiv "Content-Type")
-                                   (content
-                                    ,(string-append (or content-type
-                                                        "application/xhtml+xml")
-                                                    "; charset="
-                                                    (or charset
-                                                        "UTF-8"))))))
-                        '())
-                    (if title `((title ,title)) '())
-                    (cond ((string? css)
-                           `((link (@ (rel "stylesheet")
-                                      (href ,css)
-                                      (type "text/css")))))
-                          ((list? css)
-                           (map (lambda (f)
-                                  (if (list? f)
-                                      (let ((data (read-all (make-pathname (current-directory) (car f)))))
-                                        `(style ,(if literal-style?
-                                                     `(literal ,data)
-                                                     data)))
-                                      `(link (@ (rel "stylesheet")
-                                                (href ,f)
-                                                (type "text/css")))))
-                                css))
-                          (else '()))
-                    (if headers `(,headers) '()))
-           ,(if (string? contents)
-                `(body ,contents)
-                `(body ,@contents)))))
+         (apply-tag-attribs/sxml
+          'html
+          html-attribs
+          (append '(head)
+                  (if (or charset content-type)
+                      `((meta (@ (http-equiv "Content-Type")
+                                 (content
+                                  ,(string-append (or content-type
+                                                      "application/xhtml+xml")
+                                                  "; charset="
+                                                  (or charset
+                                                      "UTF-8"))))))
+                      '())
+                  (if title `((title ,title)) '())
+                  (cond ((string? css)
+                         `((link (@ (rel "stylesheet")
+                                    (href ,css)
+                                    (type "text/css")))))
+                        ((list? css)
+                         (map (lambda (f)
+                                (if (list? f)
+                                    (let ((data (read-all (make-pathname (current-directory) (car f)))))
+                                      `(style ,(if literal-style?
+                                                   `(literal ,data)
+                                                   data)))
+                                    `(link (@ (rel "stylesheet")
+                                              (href ,f)
+                                              (type "text/css")))))
+                              css))
+                        (else '()))
+                  (if headers `(,headers) '()))
+          (if (null? contents)
+              (apply-tag-attribs/sxml 'body body-attribs)
+              (apply-tag-attribs/sxml 'body body-attribs contents)))))
     (if doctype
         (append `((literal ,doctype)) `(,page))
         page)))
 
-(define (html-page contents #!key css title doctype headers charset content-type literal-style?)
+(define (apply-tag-attribs tag attribs . content)
+  ;; Hack for html-page to accept the html-attribs/body-attribs syntax ((attrib val) ...)
+  (let ((kattribs (map (lambda (attrib/val)
+                         (let ((attrib (car attrib/val))
+                               (val (cadr attrib/val)))
+                           (list (string->keyword (->string attrib))
+                                 val)))
+                       attribs)))
+    (apply tag (append (apply append kattribs) content))))
+
+(define (html-page contents #!key css title doctype headers charset content-type literal-style? (html-attribs '()) (body-attribs '()))
   (if (generate-sxml?)
       (sxml-page contents
                  css: css
@@ -179,10 +200,14 @@
                  headers: headers
                  charset: charset
                  content-type: content-type
-                 literal-style?: literal-style?)
+                 literal-style?: literal-style?
+                 html-attribs: html-attribs
+                 body-attribs: body-attribs)
       (string-append
        (or doctype "")
-       (<html>
+       (apply-tag-attribs
+        <html>
+        html-attribs
         (<head>
          (if (or charset content-type)
              (<meta> http-equiv: "Content-Type"
@@ -206,7 +231,7 @@
          (or headers ""))
         (if (string-prefix-ci? "<body" contents)
             contents
-            (<body> contents))))))
+            (apply-tag-attribs <body> body-attribs contents))))))
 
 
 ;;; combo-box

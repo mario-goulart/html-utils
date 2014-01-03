@@ -119,6 +119,9 @@
         (delete-file "style2.css")
         page))
 
+(test "<html lang='us'><head></head><body bgcolor='red' onclick='return'><pre>foo</pre></body></html>"
+      (html-page (<pre> "foo") html-attribs: '((lang "us")) body-attribs: '((bgcolor "red") (onclick "return"))))
+
 (test-end)
 
 
@@ -227,6 +230,14 @@
                          css: '("style.css" ("style2.css"))))
         (delete-file "style2.css")
         page))
+
+(test '(html (@ (lang "us"))
+             (head)
+             (body (@ (bgcolor "red")
+                      (onclick "return"))
+                   (pre "foo")))
+      (html-page (<pre> "foo") html-attribs: '((lang "us")) body-attribs: '((bgcolor "red") (onclick "return"))))
+
 
 ;;; combo-box
 (test '(select (@ (name "test") (id "test"))
